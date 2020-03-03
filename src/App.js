@@ -1,78 +1,118 @@
-import React, { Component } from 'react'
-import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
-import 'bootstrap/dist/css/bootstrap.min.css';
-import HomePage from './Components/HomePage.js'
-import NewRoom from './Components/NewRoom.js'
+
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 import './App.css'
-import Room from './Components/Room.js';
+import HomePage from './Components/HomePage'
+import 'bootstrap/dist/css/bootstrap.min.css';
+import AddRoom from './Components/AddRoom'
+import Room from './Components/Room'
+import React, { Component } from 'react'
+import { Link } from 'react-router-dom'
 
 
 export default class App extends Component {
 
+  state = {
+    roomOnClick: {
+    },
+    index: 0,
+    AddRoomS: [
+      { RoomName: 'shimon', RoomKind: 'badroom', RoomColor: 'green',Products:['mazgan']},
+      { RoomName: 'daniel', RoomKind: 'malka', RoomColor: 'red' },
 
-  constructor(props) {
-    super(props);
-    
-
-  this.state= {
-
-    options:[
-      {label:'Bedroom'},
-      {label:'Kitchen'},
-      {label:'Bathroom'}],
-      flag:'unshow',
-  name:'',
-  color:'',
-  type:'',
-  Rooms:[{
-      type:'',
-      name:'',
-      backgroundColor:''
-  }],
-  flag:'',
-  index:'',
-
-  Products:'',
-  
+    ],
   }
-  }
-  
-  componentWillMount() {
-    this.setState({name:this.state.Rooms.name,type:this.state.Rooms.type });
-    
-}
 
+  // addProducts =(i) => {
+  //   let delBtn = this.state.AddRoomS.filter((ele, ind) => (ind != i));
+
+  //   this.setState({AddRoomS: [{
+  //       RoomName: RoomName,
+  //       RoomKind: RoomKind,
+  //       RoomColor: RoomColor,
+  //       Products:Products,
+  //       Display: 'none',
+  //     },...delBtn]
+  //   });
+  // }  
   
 
-   
-  insideRoom = (name,type,color,flag) => {  
-    this.setState({name:name})
-    this.setState({type:type})
-    this.setState({color:color})
-    this.setState({flag:flag})
-    this.setState({Rooms:[{name:name,type:type,backgroundColor:color},...this.state.Rooms]})
+  delRoom = (i) => {
+    let delBtn = this.state.AddRoomS.filter((ele, ind) => (ind != i));
+    this.setState({ AddRoomS: [...delBtn] });
   }
-   
 
- render() {
+  onClickRoom = (i,RoomName, RoomKind, RoomColor,Products) => {
+    let delBtn = this.state.AddRoomS.filter((ele, ind) => (ind != i));
+
+    this.setState({AddRoomS: [{
+        RoomName: RoomName,
+        RoomKind: RoomKind,
+        RoomColor: RoomColor,
+        Products:Products,
+        Display: 'none',
+      },...delBtn]
+    });
+  }
+
+
+  // onClickRoom = (RoomName, RoomKind, RoomColor) => {
+
+  //   this.setState({
+  //     RoomName: {
+  //       RoomName: RoomName,
+  //       RoomKind: RoomKind,
+  //       RoomColor: RoomColor,
+  //       Display: 'none',
+  //     }, ...this.state.AddRoomS
+  //   })
+
+  // }
+  newRoom = (RoomName, RoomKind, RoomColor) => {
+
+    this.setState({ AddRoomS: [{ RoomName: RoomName, RoomKind: RoomKind, RoomColor: RoomColor }, ...this.state.AddRoomS] })
+    // this.setState({AddRoomS:[RoomName={ RoomName: RoomName, RoomKind: RoomKind, RoomColor:RoomColor }]})
+
+  }
+
+
+
+  render() {
 
     return (
-      <div className="App-header">   
-     <Router> 
-      <Switch>
-        <Route exact path="/" component={()=>{return  <HomePage 
-         name={this.state.name} color={this.state.color}  
-         type={this.state.type}  flag={this.state.flag}   />}}>
-        </Route>
-        <Route exact path="/addroom" component={()=>{return <NewRoom insideRoom={this.insideRoom}/>}}>
-        </Route>
-        <Route exact path="/room" component={()=>{return <Room name={this.state.name}
-        type={this.state.type}
-        />}}>
-        </Route>
-      </Switch>
-     </Router>
+      <div >
+        
+        <Router>
+        <h1 className='App'>Smart House</h1>
+          <br />
+          <br />        
+          <Switch>
+
+            <Route exact path='/HomePage' component={() => {
+              return  <div>
+                 <p className='App'><Link className='App' to='/AddRoom'>Add Room <button>+</button> </Link></p>
+               {this.state.AddRoomS.map((element, i) => {
+               return <HomePage RoomName={element.RoomName} AddRoomS={this.state.AddRoomS} RoomKind={element.RoomKind} RoomColor={element.RoomColor}
+              del={this.delRoom} index={i} create={this.newRoom} onClickRoom={this.onClickRoom} Products={element.Products}>
+            </HomePage> 
+          })}
+           </div>
+            }}></Route>
+
+
+            <Route exact path='/AddRoom' component={() => {
+              return <div>
+                <AddRoom AddRoomS={this.state.AddRoomS} RoomKind={this.state.AddRoomS.RoomKind} RoomName={this.state.AddRoomS.RoomName}
+                  RoomColor={this.state.AddRoomS.RoomColor} create={this.newRoom}
+                />
+              </div>
+            }}></Route>
+
+
+            <Route exact path='/Room' component={() => { return <Room AddRoomS={this.state.AddRoomS} roomOnClick={this.state.roomOnClick} /> }}></Route>
+
+          </Switch>
+        </Router>
       </div>
     )
   }
-}  
+}
